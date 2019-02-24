@@ -1,12 +1,12 @@
 package com.shiny.joypadmod;
 
+import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
 
 import com.shiny.joypadmod.helpers.LogHelper;
-import com.shiny.joypadmod.helpers.ModVersionHelper;
 import com.shiny.joypadmod.inputevent.ControllerInputEvent.EventType;
 import com.shiny.joypadmod.lwjglVirtualInput.VirtualMouse;
+import net.minecraft.util.Util;
 
 public class JoypadMouse
 {
@@ -103,7 +103,7 @@ public class JoypadMouse
 
 	public static class AxisReader
 	{
-		private static Minecraft mc = Minecraft.getMinecraft();
+		private static Minecraft mc = Minecraft.getInstance();
 
 		// last delta movement of axis
 		public static float deltaX;
@@ -179,16 +179,16 @@ public class JoypadMouse
 
 			if (deltaX == 0 && deltaY == 0)
 			{
-				last0Reading = Minecraft.getSystemTime();
+				last0Reading = Util.nanoTime();
 				return;
 			}
-			lastNon0Reading = Minecraft.getSystemTime();
+			lastNon0Reading = Util.nanoTime();
 
 			deltaX = calculateFinalDelta(inGui, deltaX, horizontalThreshold);
 			deltaY = calculateFinalDelta(inGui, deltaY, verticalThreshold);
 			if (ControllerSettings.loggingLevel > 2)
 				LogHelper.Info("Camera deltaX: " + deltaX + " Camera deltaY: " + deltaY);
-			lastAxisReading = Minecraft.getSystemTime();
+			lastAxisReading = Util.nanoTime();
 		}
 
 		public static void updateXY()
@@ -199,8 +199,7 @@ public class JoypadMouse
 			int lastReportedX = x;
 			int lastReportedY = y;
 
-			final ScaledResolution scaledResolution = ModVersionHelper.GetScaledResolution();
-
+			final MainWindow mainWindow = mc.mainWindow;
 			pollAxis();
 
 			if (mc.currentScreen != null)
@@ -212,17 +211,17 @@ public class JoypadMouse
 					x = 0;
 				if (y < 0)
 					y = 0;
-				if (x > scaledResolution.getScaledWidth())
-					x = scaledResolution.getScaledWidth() - 5;
-				if (y > scaledResolution.getScaledHeight())
-					y = scaledResolution.getScaledHeight() - 5;
+				if (x > mainWindow.getScaledWidth())
+					x = mainWindow.getScaledWidth() - 5;
+				if (y > mainWindow.getScaledHeight())
+					y = mainWindow.getScaledHeight() - 5;
 
 				if (ControllerSettings.loggingLevel > 2 && 
 						(lastReportedX != x || lastReportedY != y))
 					LogHelper.Debug("Virtual Mouse x: " + x + " y: " + y);
 
-				mcY = mc.displayHeight - (int) (y * scaledResolution.getScaleFactor());
-				mcX = x * scaledResolution.getScaleFactor();
+				mcY = mc.mainWindow.getHeight() - (int) (y * mainWindow.getGuiScaleFactor());
+				mcX = x * (int) mainWindow.getGuiScaleFactor();
 				deltaX = 0;
 				deltaY = 0;
 			}
@@ -230,18 +229,19 @@ public class JoypadMouse
 
 		public static void centerCrosshairs()
 		{
-			final ScaledResolution scaledResolution = ModVersionHelper.GetScaledResolution();
+			final MainWindow mainWindow = mc.mainWindow;
 
-			x = scaledResolution.getScaledWidth() / 2;
-			y = scaledResolution.getScaledHeight() / 2;
+			x = mainWindow.getScaledWidth() / 2;
+			y = mainWindow.getScaledHeight() / 2;
 
-			mcY = mc.displayHeight - (int) (y * scaledResolution.getScaleFactor());
-			mcX = x * scaledResolution.getScaleFactor();
+			//mcY = mc.displayHeight - (int) (y * mainWindow.getScaleFactor());
+			mcY = mc.mainWindow.getHeight() - (int) (y * mainWindow.getGuiScaleFactor());
+			mcX = x * (int)mainWindow.getGuiScaleFactor();
 		}
 
 		public static boolean pollNeeded(boolean inGui)
 		{
-			if (Minecraft.getSystemTime() - lastAxisReading < (inGui ? guiPollTimeout : gamePollTimeout))
+			if (Util.nanoTime() - lastAxisReading < (inGui ? guiPollTimeout : gamePollTimeout))
 				return false;
 
 			return true;
@@ -249,12 +249,12 @@ public class JoypadMouse
 
 		public static void setXY(int x, int y)
 		{
-			final ScaledResolution scaledResolution = ModVersionHelper.GetScaledResolution();
+			final MainWindow mainWindow = mc.mainWindow;
 
 			AxisReader.x = x;
 			AxisReader.y = y;
-			AxisReader.mcX = x * scaledResolution.getScaleFactor();
-			AxisReader.mcY = mc.displayHeight - (int) (y * scaledResolution.getScaleFactor());
+			AxisReader.mcX = x * (int) mainWindow.getGuiScaleFactor();
+			AxisReader.mcY = mainWindow.getHeight() - (int) (y * mainWindow.getGuiScaleFactor());
 		}
 
 		private static float getReading(String bindKey)
@@ -275,7 +275,7 @@ public class JoypadMouse
 		private static float lastReportedMultiplier = 0;
 		private static float getModifiedMultiplier(float currentMultiplier)
 		{
-			long elapsed = Minecraft.getSystemTime() - last0Reading;
+			long elapsed = Util.nanoTime() - last0Reading;
 			if (elapsed < 500)
 			{
 				float base = currentMultiplier * 0.5f;

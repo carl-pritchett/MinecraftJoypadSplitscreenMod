@@ -7,7 +7,7 @@ public class McKeyBindHelper
 {
 	public static KeyBinding getMinecraftKeyBind(String bindingKey)
 	{
-		for (KeyBinding kb : Minecraft.getMinecraft().gameSettings.keyBindings)
+		for (KeyBinding kb : Minecraft.getInstance().gameSettings.keyBindings)
 		{
 			String keyInputString = McObfuscationHelper.getKeyDescription(kb);
 			if (keyInputString.compareTo(bindingKey) == 0)

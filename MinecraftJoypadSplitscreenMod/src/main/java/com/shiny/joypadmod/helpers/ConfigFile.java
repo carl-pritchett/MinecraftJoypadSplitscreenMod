@@ -13,8 +13,8 @@ import com.shiny.joypadmod.inputevent.ControllerBinding;
 import com.shiny.joypadmod.inputevent.ControllerBinding.BindingOptions;
 
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.common.config.ConfigCategory;
-import net.minecraftforge.common.config.Configuration;
+//import net.minecraftforge.common.config.ConfigCategory;
+//import net.minecraftforge.common.config.Configuration;
 
 public class ConfigFile
 {
@@ -56,9 +56,9 @@ public class ConfigFile
 
 		userName = "unknown";
 
-		if (Minecraft.getMinecraft() != null && Minecraft.getMinecraft().getSession() != null)
+		if (Minecraft.getInstance() != null && Minecraft.getInstance().getSession() != null)
 		{
-			userName = Minecraft.getMinecraft().getSession().getUsername();
+			userName = Minecraft.getInstance().getSession().getUsername();
 		}
 
 		setSharedProfile(config.get(globalCat, "SharedProfile", false).getBoolean(false));

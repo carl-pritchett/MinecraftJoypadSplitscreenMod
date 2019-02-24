@@ -3,6 +3,7 @@ package com.shiny.joypadmod;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.util.Util;
 import org.lwjgl.input.Mouse;
 
 import com.shiny.joypadmod.helpers.Customizations;
@@ -26,7 +27,7 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 public class GameRenderHandler
 {
-	private static Minecraft mc = Minecraft.getMinecraft();
+	private static Minecraft mc = Minecraft.getInstance();
 	public static int reticalColor = 0xFFFFFFFF;
 	// boolean to allow the original controls menu.
 	// normally we override the controls menu when seen
@@ -62,7 +63,7 @@ public class GameRenderHandler
 				{
 					ControllerSettings.JoypadModInputLibrary.poll();
 					if (Mouse.isInsideWindow()
-							&& Minecraft.getSystemTime() - JoypadMouse.AxisReader.lastNon0Reading > 1000)
+							&& Util.nanoTime() - JoypadMouse.AxisReader.lastNon0Reading > 1000)
 					{
 						if (Mouse.getDX() != 0 || Mouse.getDY() != 0)
 						{
@@ -149,7 +150,7 @@ public class GameRenderHandler
 		
 		if (displayCountDown > 0)
 		{
-			Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(displayMessage, 0, 0, 0xFFFF55 );	
+			Minecraft.getInstance().fontRenderer.drawStringWithShadow(displayMessage, 0, 0, 0xFFFF55 );
 			displayCountDown--;
 		}
 
@@ -158,10 +159,10 @@ public class GameRenderHandler
 			if (InGuiCheckNeeded())
 			{
 				// fixes issue with transitioning from inGui to game movement continuing
-				if (Minecraft.getSystemTime() - lastInGameTick < 50)
+				if (Util.nanoTime() - lastInGameTick < 50)
 				{
 					ControllerSettings.unpressAll();
-					Minecraft.getMinecraft().gameSettings.pauseOnLostFocus = false;
+					Minecraft.getInstance().gameSettings.pauseOnLostFocus = false;
 				}
 
 				DrawRetical();
@@ -171,10 +172,10 @@ public class GameRenderHandler
 			if (InGameCheckNeeded())
 			{
 				// fixes issue with transitioning from inGame to Gui movement continuing
-				if (Minecraft.getSystemTime() - lastInGuiTick < 50)
+				if (Util.nanoTime() - lastInGuiTick < 50)
 				{
 					ControllerSettings.unpressAll();
-					Minecraft.getMinecraft().gameSettings.pauseOnLostFocus = false;
+					Minecraft.getInstance().gameSettings.pauseOnLostFocus = false;
 				}
 
 				for (ControllerBinding binding = ControllerSettings.startGameBindIteration(); binding != null; binding = ControllerSettings.getNextGameAutoBinding())
@@ -199,24 +200,24 @@ public class GameRenderHandler
 		if (ControllerSettings.isSuspended())
 			return;
 
-		if (Minecraft.getSystemTime() - lastFlansModCheckTick > 750)
+		if (Util.nanoTime() - lastFlansModCheckTick > 750)
 		{
 			lastFlansModCheckValue = mc.currentScreen != null
 					&& mc.currentScreen.getClass().toString().contains("GuiDriveableController");
-			lastFlansModCheckTick = Minecraft.getSystemTime();
+			lastFlansModCheckTick = Util.nanoTime();
 		}
 
 		if (InGuiCheckNeeded())
 		{
 			HandleJoystickInGui();
-			lastInGuiTick = Minecraft.getSystemTime();
+			lastInGuiTick = Util.nanoTime();
 			HandleDragAndScrolling();
 		}
 
 		if (InGameCheckNeeded())
 		{
 			HandleJoystickInGame();
-			lastInGameTick = Minecraft.getSystemTime();
+			lastInGameTick = Util.nanoTime();
 		}
 	}
 
@@ -245,7 +246,7 @@ public class GameRenderHandler
 			{
 				if (JoypadMouse.pollAxis(false))
 				{
-					float multiplier = 4f * mc.gameSettings.mouseSensitivity;
+					float multiplier = 4f * (float)mc.gameSettings.mouseSensitivity;
 					VirtualMouse.moveMouse(
 							(int) (JoypadMouse.AxisReader.deltaX * multiplier),
 							(int) (JoypadMouse.AxisReader.deltaY * multiplier * (ControllerSettings.getInvertYAxis() ? 1.0f
@@ -258,8 +259,11 @@ public class GameRenderHandler
 			}
 			else if (JoypadMouse.pollAxis(false))
 			{
-				
-				mc.player.turn(JoypadMouse.AxisReader.deltaX, JoypadMouse.AxisReader.deltaY
+				// TODO not sure about this replacement
+//				mc.player.turn(JoypadMouse.AxisReader.deltaX, JoypadMouse.AxisReader.deltaY
+//						* (ControllerSettings.getInvertYAxis() ? 1.0f : -1.0f));
+
+				mc.player.rotateTowards(JoypadMouse.AxisReader.deltaX, JoypadMouse.AxisReader.deltaY
 						* (ControllerSettings.getInvertYAxis() ? 1.0f : -1.0f));
 			}
 		}
@@ -277,8 +281,8 @@ public class GameRenderHandler
 
 		if (mc.currentScreen != null && mc.currentScreen instanceof GuiContainer)
 		{
-			if (Minecraft.getSystemTime() - ControllerSettings.get("joy.scrollDown").lastTick < 100
-					|| Minecraft.getSystemTime() - ControllerSettings.get("joy.scrollUp").lastTick < 100)
+			if (Util.nanoTime() - ControllerSettings.get("joy.scrollDown").lastTick < 100
+					|| Util.nanoTime() - ControllerSettings.get("joy.scrollUp").lastTick < 100)
 				return;
 		}
 
@@ -303,7 +307,7 @@ public class GameRenderHandler
 		{
 			// ignore controller events in the milliseconds following in GAME
 			// controlling
-			if (Minecraft.getSystemTime() - lastInGameTick < 200)
+			if (Util.nanoTime() - lastInGameTick < 200)
 				continue;
 
 			if (ControllerSettings.loggingLevel > 3)
@@ -352,7 +356,7 @@ public class GameRenderHandler
 		{
 			// ignore controller events in the milliseconds following in GUI
 			// controlling
-			if (Minecraft.getSystemTime() - lastInGuiTick < 100)
+			if (Util.nanoTime() - lastInGuiTick < 100)
 				continue;
 
 			if (ControllerSettings.loggingLevel > 3)
@@ -373,7 +377,9 @@ public class GameRenderHandler
 				}
 			}
 
-			mc.inGameHasFocus = true;
+			// TODO not sure about this setting replacement
+			//mc.inGameHasFocus = true;
+			mc.focusChanged(true);
 
 			// hack in sprint
 			if (ModVersionHelper.getVersion() == 164)
@@ -411,8 +417,13 @@ public class GameRenderHandler
 			{
 				LogHelper.Debug("Replacing control screen");
 				String[] names = McObfuscationHelper.getMcVarNames("parentScreen");
+
+				// TODO not a perfect replacement
+//				GuiScreen parent = ObfuscationReflectionHelper.getPrivateValue(GuiControls.class, (GuiControls) gui,
+//						names[0], names[1]);
 				GuiScreen parent = ObfuscationReflectionHelper.getPrivateValue(GuiControls.class, (GuiControls) gui,
-						names[0], names[1]);
+						names[0]);
+
 				mc.displayGuiScreen(new JoypadConfigMenu(parent));
 			}
 			catch (Exception ex)

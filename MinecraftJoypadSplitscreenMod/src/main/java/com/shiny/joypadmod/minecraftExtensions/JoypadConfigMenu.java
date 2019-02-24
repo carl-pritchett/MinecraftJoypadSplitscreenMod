@@ -3,6 +3,7 @@ package com.shiny.joypadmod.minecraftExtensions;
 import java.util.EnumSet;
 import java.util.List;
 
+import net.minecraft.util.Util;
 import org.lwjgl.input.Keyboard;
 
 import com.shiny.joypadmod.ControllerSettings;
@@ -119,16 +120,16 @@ public class JoypadConfigMenu extends GuiScreen
 		int buttonYOffset = 10;
 		// controller button
 		addButton(new GuiButton(100, buttonXStart_top, buttonYStart_top + buttonYOffset, controllerButtonWidth, 20,
-				getJoystickInfo(JoyInfoEnum.name)), controllers != null && controllers.size() > 0);
+				getJoystickInfo(JoyInfoEnum.name)) {}, controllers != null && controllers.size() > 0);
 
 		buttonYOffset += 20;
 
 		// prev controller button
 		addButton(new GuiButton(101, buttonXStart_top, buttonYStart_top + buttonYOffset, controllerButtonWidth / 2, 20,
-				"<<"));
+				"<<"){});
 		// next controller button
 		addButton(new GuiButton(102, buttonXStart_top + controllerButtonWidth / 2, buttonYStart_top + buttonYOffset,
-				controllerButtonWidth / 2, 20, ">>"));
+				controllerButtonWidth / 2, 20, ">>"){});
 
 		// other controllers
 		// addButton(new GuiButton(200, buttonXStart_top + (controllerButtonWidth / 3 * 2), buttonYStart_top
@@ -170,7 +171,7 @@ public class JoypadConfigMenu extends GuiScreen
 		int buttonYSpacing = 20;
 
 		addButton(new GuiButton(350, rightButtonsXStart, controlListYStart + (buttonYSpacing * buttonNum++),
-				rightButtonWidth, 20, sGet("controlMenu.addKey")));
+				rightButtonWidth, 20, sGet("controlMenu.addKey")){});
 
 		// add bottom buttons
 		buttonNum = 0;
@@ -179,16 +180,16 @@ public class JoypadConfigMenu extends GuiScreen
 				* numBottomButtons;
 
 		addButton(new GuiButton(400, bottomButtonStart + bottomButtonWidth * buttonNum++, buttonYStart_bottom,
-				bottomButtonWidth, 20, sGet("controls.reset")));
+				bottomButtonWidth, 20, sGet("controls.reset")){});
 
 		addButton(new GuiButton(500, bottomButtonStart + bottomButtonWidth * buttonNum++, buttonYStart_bottom,
-				bottomButtonWidth, 20, sGet("gui.done")));
+				bottomButtonWidth, 20, sGet("gui.done")){});
 
 		addButton(new GuiButton(420, bottomButtonStart + bottomButtonWidth * buttonNum++, buttonYStart_bottom,
-				bottomButtonWidth, 20, sGet("controlMenu.advanced")));
+				bottomButtonWidth, 20, sGet("controlMenu.advanced")){});
 
 		addButton(new GuiButton(520, bottomButtonStart + bottomButtonWidth * buttonNum++, buttonYStart_bottom,
-				bottomButtonWidth, 20, sGet("controlMenu.mouse") + " " + sGet("joy.menu")));
+				bottomButtonWidth, 20, sGet("controlMenu.mouse") + " " + sGet("joy.menu")){});
 
 		this.optionList = new JoypadControlList(this, getFontRenderer());
 	}
@@ -208,7 +209,8 @@ public class JoypadConfigMenu extends GuiScreen
 		ControllerSettings.checkIfBindingsNeedUpdating();
 	}
 
-	@Override
+	// TODO unclear override
+	//@Override
 	protected void actionPerformed(GuiButton guiButton)
 	{
 		int id = getButtonId(guiButton);
@@ -246,7 +248,7 @@ public class JoypadConfigMenu extends GuiScreen
 			break;
 		case 350: // custom binding
 			customBindingKeyIndex = ButtonsEnum.addKey.ordinal();
-			customBindingTickStart = Minecraft.getSystemTime();
+			customBindingTickStart = Util.nanoTime();
 			break;
 		case 400: // Reset
 			if (currentJoyIndex != -1)
@@ -306,7 +308,7 @@ public class JoypadConfigMenu extends GuiScreen
 	}
 
 	@Override
-	public void drawScreen(int par1, int par2, float par3)
+	public void render(int par1, int par2, float par3)
 	{
 		drawDefaultBackground();
 
@@ -329,14 +331,14 @@ public class JoypadConfigMenu extends GuiScreen
 		// CONTROLLER NAME BUTTON
 		// PREV NEXT OTHER
 
-		super.drawScreen(par1, par2, par3);
+		super.render(par1, par2, par3);
 	}
 
 	private void checkSensitivitySliders()
 	{
-		float f = ((GuiSlider) buttonList.get(ButtonsEnum.gameSensitivity.ordinal())).getValue();
+		float f = ((GuiSlider) buttons.get(ButtonsEnum.gameSensitivity.ordinal())).getValue();
 		ControllerSettings.inGameSensitivity = (int) (f * 100);
-		f = ((GuiSlider) buttonList.get(ButtonsEnum.menuSensitivity.ordinal())).getValue();
+		f = ((GuiSlider) buttons.get(ButtonsEnum.menuSensitivity.ordinal())).getValue();
 		ControllerSettings.inMenuSensitivity = (int) (f * 100);
 	}
 
@@ -344,7 +346,7 @@ public class JoypadConfigMenu extends GuiScreen
 	{
 		if (customBindingTickStart > 0)
 		{
-			if (Minecraft.getSystemTime() - customBindingTickStart > 5000)
+			if (Util.nanoTime() - customBindingTickStart > 5000)
 				customBindingTickStart = 0;
 			changeButtonText(customBindingKeyIndex, sGet("controlMenu.pressKey"));
 			if (this.lastKeyCode != -1)
@@ -378,20 +380,21 @@ public class JoypadConfigMenu extends GuiScreen
 	/**
 	 * Fired when a key is typed. This is the equivalent of KeyListener.keyTyped(KeyEvent e).
 	 */
-	protected void keyTyped(char c, int code)
+	@Override
+	public boolean keyPressed(int c, int code, int unknown)
 	{
 		if (customBindingTickStart > 0)
 		{
 			this.lastKeyCode = code;
-			return;
+			return false;
 		}
 		
 		if (JoypadControlList.textInputName != null 
 				&& JoypadControlList.textInputName.getVisible())
 		{
 			this.lastKeyCode = code;
-			JoypadControlList.textInputName.textboxKeyTyped(c, code);
-			return;
+			JoypadControlList.textInputName.keyPressed(c, code, unknown);
+			return false;
 		}
 		
 		if (c == ' ' && controllers.size() > 0)
@@ -401,13 +404,14 @@ public class JoypadConfigMenu extends GuiScreen
 		else
 		{
 			try{
-				super.keyTyped(c, code);}
-			catch(java.io.IOException e){}
+				return super.keyPressed(c, code, unknown);}
+			catch(Exception e){}
 		}
+		return false;
 	}
 
 	@Override
-	protected void mouseClicked(int mouseX, int mouseY, int mouseButton)
+	public boolean mouseClicked(double mouseX, double mouseY, int mouseButton)
 	{
 		if (this.optionList != null)
 		{
@@ -416,8 +420,10 @@ public class JoypadConfigMenu extends GuiScreen
 			JoypadControlList.lastMouseButton = mouseButton;
 		}
 		try{
-			super.mouseClicked(mouseX, mouseY, mouseButton);
-		}catch(java.io.IOException e){}
+			return super.mouseClicked(mouseX, mouseY, mouseButton);
+		}catch(Exception e){}
+
+		return false;
 	}
 
 	private int getJoypadIndex(int offset)
@@ -437,7 +443,7 @@ public class JoypadConfigMenu extends GuiScreen
 
 	private void changeButtonText(int buttonIndex, String text)
 	{
-		((GuiButton) buttonList.get(buttonIndex)).displayString = text;
+		((GuiButton) buttons.get(buttonIndex)).displayString = text;
 	}
 
 	/*
@@ -470,7 +476,7 @@ public class JoypadConfigMenu extends GuiScreen
 		if (!enabled)
 			guiButton.enabled = false;
 		// field_146292_n.add(guiButton);
-		buttonList.add(guiButton);
+		buttons.add(guiButton);
 	}
 
 	private int getButtonId(GuiButton guiButton)
@@ -490,7 +496,8 @@ public class JoypadConfigMenu extends GuiScreen
 	{
 		// return this.field_146289_q;
 		// return this.fontRenderer;
-		return this.fontRendererObj;
+		//return this.fontRendererObj;
+		return Minecraft.getInstance().fontRenderer;
 	}
 
 	public String sGet(String inputCode)

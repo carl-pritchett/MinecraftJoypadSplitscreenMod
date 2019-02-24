@@ -4,13 +4,14 @@ import java.lang.reflect.Method;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.util.Util;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 public class McGuiHelper
 {
 
 	private static Method mouseButtonMove = null;
-	private static Minecraft mc = Minecraft.getMinecraft();
+	private static Minecraft mc = Minecraft.getInstance();
 
 	private static final String[] eventButtonNames = McObfuscationHelper.getMcVarNames("eventButton");
 	private static final String[] lastMouseEventNames = McObfuscationHelper.getMcVarNames("lastMouseEvent");
@@ -59,10 +60,16 @@ public class McGuiHelper
 
 		try
 		{
+			// TODO Dubious replacement - deleted last param
+//			eventButton = ObfuscationReflectionHelper.getPrivateValue(GuiScreen.class, (GuiScreen) mc.currentScreen,
+//					eventButtonNames[0], eventButtonNames[1]);
+//			lastEvent = ObfuscationReflectionHelper.getPrivateValue(GuiScreen.class, (GuiScreen) mc.currentScreen,
+//					lastMouseEventNames[0], lastMouseEventNames[1]);
+
 			eventButton = ObfuscationReflectionHelper.getPrivateValue(GuiScreen.class, (GuiScreen) mc.currentScreen,
-					eventButtonNames[0], eventButtonNames[1]);
+					eventButtonNames[0]);
 			lastEvent = ObfuscationReflectionHelper.getPrivateValue(GuiScreen.class, (GuiScreen) mc.currentScreen,
-					lastMouseEventNames[0], lastMouseEventNames[1]);
+					lastMouseEventNames[0]);
 		}
 		catch (Exception ex)
 		{
@@ -71,7 +78,7 @@ public class McGuiHelper
 				lastEvent = 100;
 			eventButton = 0;
 		}
-		long var3 = Minecraft.getSystemTime() - lastEvent;
+		long var3 = Util.nanoTime() - lastEvent;
 
 		try
 		{

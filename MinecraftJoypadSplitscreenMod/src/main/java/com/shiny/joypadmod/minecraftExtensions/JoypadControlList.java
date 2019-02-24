@@ -6,6 +6,9 @@ import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 
+import net.minecraft.client.MainWindow;
+import net.minecraft.client.gui.GuiListExtended;
+import net.minecraft.util.Util;
 import org.apache.commons.lang3.ArrayUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -27,14 +30,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.client.gui.ScaledResolution;
+
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraftforge.fml.client.GuiScrollingList;
 
 
 
-public class JoypadControlList extends GuiScrollingList
+
+public class JoypadControlList extends GuiListExtended//GuiScrollingList
 {
 	private FontRenderer fontRenderer;
 	private int controllerInputTimeout = 5000;
@@ -42,8 +45,8 @@ public class JoypadControlList extends GuiScrollingList
 
 	private static final int buttonHeight = 20;
 
-	public static int lastXClick = 0;
-	public static int lastYClick = 0;
+	public static double lastXClick = 0;
+	public static double lastYClick = 0;
 	public static int lastMouseButton = 0;
 
 	private int selectedIndex = -1;
@@ -56,7 +59,7 @@ public class JoypadControlList extends GuiScrollingList
 	
 	public static GuiTextField textInputName = null;
 
-	private static Minecraft mc = Minecraft.getMinecraft();
+	private static Minecraft mc = Minecraft.getInstance();
 
 	public List<String> joyBindKeys;
 
@@ -67,7 +70,7 @@ public class JoypadControlList extends GuiScrollingList
 				parent.height, // height
 				parent.controlListYStart, // top start
 				parent.controlListYStart + parent.controlListHeight, // bottom end
-				parent.controlListXStart, // left start
+				//parent.controlListXStart, // left start
 				buttonHeight); // entryHeight
 
 		LogHelper.Info("width:" + parent.controlListWidth + " height:" + parent.height + " yStart:"
@@ -185,13 +188,13 @@ public class JoypadControlList extends GuiScrollingList
 
 	}
 
-	@Override
-	protected int getSize()
-	{
-		return joyBindKeys.size();
-	}
+//	@Override
+//	public int getSize()
+//	{
+//		return joyBindKeys.size();
+//	}
 
-	@Override
+	//@Override
 	protected void elementClicked(int index, boolean doubleClick)
 	{
 		selectedIndex = index;
@@ -212,7 +215,7 @@ public class JoypadControlList extends GuiScrollingList
 	int wheelDown = 0;
 
 	@Override
-	protected void drawSlot(int var1, int var2, int var3, int var4, Tessellator var5)
+	protected void drawSlot(int var1, int var2, int var3, int var4, int var5, int var6, float var7)
 	{
 		if (var1 >= joyBindKeys.size())
 			return;
@@ -256,7 +259,7 @@ public class JoypadControlList extends GuiScrollingList
 
 		if (bindingIndexToUpdate != -1)
 		{
-			if (getControllerInput() || Minecraft.getSystemTime() - controllerTickStart > controllerInputTimeout)
+			if (getControllerInput() || Util.nanoTime() - controllerTickStart > controllerInputTimeout)
 			{
 				bindingIndexToUpdate = -1;
 				ControllerSettings.suspendControllerInput(false, 0);
@@ -272,12 +275,12 @@ public class JoypadControlList extends GuiScrollingList
 		if (bindingKey == null)
 			return;
 
-		Minecraft mc = Minecraft.getMinecraft();
-		final ScaledResolution scaledResolution = ModVersionHelper.GetScaledResolution();
+		Minecraft mc = Minecraft.getInstance();
+		final MainWindow scaledResolution = mc.mainWindow;
 
-		final int k = Mouse.getX() * scaledResolution.getScaledWidth() / mc.displayWidth;
+		final int k = Mouse.getX() * scaledResolution.getScaledWidth() / mc.mainWindow.getWidth();
 		final int i1 = scaledResolution.getScaledHeight() - Mouse.getY() * scaledResolution.getScaledHeight()
-				/ mc.displayHeight - 1;
+				/ mc.mainWindow.getHeight() - 1;
 
 		// check if any buttons need updating
 		checkButtonPressAction(id, x, y, bindingKey);
@@ -351,9 +354,9 @@ public class JoypadControlList extends GuiScrollingList
 					textInputName.setText(controlButtonStr);
 					this.textInputName.setVisible(true);
 				}
-				textInputName.xPosition = x;
-				textInputName.yPosition = y;
-		        textInputName.drawTextBox();
+				textInputName.x = x;
+				textInputName.y = y;
+		        textInputName.drawTextField(x, y,0);
 		        this.textInputName.setFocused(true);
 			}
 			parent.lastKeyCode = -1;
@@ -362,8 +365,8 @@ public class JoypadControlList extends GuiScrollingList
 		{
 			controlButtonStr = this.fontRenderer.trimStringToWidth(controlButtonStr, controlButtonWidth - 2);
 	
-			GuiButton b = new GuiButton(10001, x, y, controlButtonWidth, buttonHeight, controlButtonStr);
-			b.func_191745_a(mc, k, i1,0);
+			GuiButton b = new GuiButton(10001, x, y, controlButtonWidth, buttonHeight, controlButtonStr) {};
+			b.render(k, i1,0);
 	
 			if (binding == null)
 				return;
@@ -385,8 +388,8 @@ public class JoypadControlList extends GuiScrollingList
 			if (enable)
 			{
 				// draw the remove/unbind option for this binding
-				b = new GuiButton(10002, x + controlButtonWidth, y, smallButtonWidth, buttonHeight, "" + optionRemove);
-				b.func_191745_a(mc, k, i1,0);
+				b = new GuiButton(10002, x + controlButtonWidth, y, smallButtonWidth, buttonHeight, "" + optionRemove) {};
+				b.render(k, i1,0);
 	
 				// draw the toggle option button
 				if (binding.inputEvent.getEventType() != EventType.AXIS
@@ -396,8 +399,8 @@ public class JoypadControlList extends GuiScrollingList
 					if (binding.bindingOptions.contains(BindingOptions.IS_TOGGLE))
 						toggle = McObfuscationHelper.symGet(McObfuscationHelper.JSyms.fCircle);
 					b = new GuiButton(10003, x + controlButtonWidth + smallButtonWidth, y, smallButtonWidth, buttonHeight,
-							"" + toggle);
-					b.func_191745_a(mc, k, i1,0);
+							"" + toggle) {};
+					b.render(k, i1,0);
 				}
 			}
 		}
@@ -440,7 +443,7 @@ public class JoypadControlList extends GuiScrollingList
 				if (lastXClick <= x + controlButtonWidth)
 				{
 					bindingIndexToUpdate = id;
-					controllerTickStart = Minecraft.getSystemTime();
+					controllerTickStart = Util.nanoTime();
 					ControllerSettings.suspendControllerInput(true, 10000);
 					checkCancelInputWait = false;
 				}
@@ -492,7 +495,7 @@ public class JoypadControlList extends GuiScrollingList
 			ControllerSettings.JoypadModInputLibrary.poll();
 			while (ControllerSettings.JoypadModInputLibrary.next())
 			{
-				if (Minecraft.getSystemTime() - controllerTickStart < 200)
+				if (Util.nanoTime() - controllerTickStart < 200)
 				{
 					LogHelper.Info("Discarding events that occured too soon after last button click");
 				}

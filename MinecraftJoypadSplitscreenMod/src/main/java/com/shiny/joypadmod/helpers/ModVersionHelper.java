@@ -1,12 +1,11 @@
 package com.shiny.joypadmod.helpers;
 
-import net.minecraftforge.client.event.GuiScreenEvent.InitGuiEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
@@ -14,9 +13,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
 import com.shiny.joypadmod.ButtonScreenTips;
 import com.shiny.joypadmod.ControllerSettings;
 import com.shiny.joypadmod.GameRenderHandler;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
 
 public class ModVersionHelper
 {
@@ -86,14 +82,14 @@ public class ModVersionHelper
 		new ButtonScreenTips();
 	}
 	
-	public static ScaledResolution GetScaledResolution()
-	{
-		Minecraft mc = Minecraft.getMinecraft();
-		// 1.8.8+
-		return new ScaledResolution(mc);
-		// 1.7.10 - 1.8.2 
-		//return new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
-		// 1.7.2
-		//return new ScaledResolution(mc.gameSettings, mc.displayWidth, mc.displayHeight);
-	}
+//	public static ScaledResolution GetScaledResolution()
+//	{
+//		Minecraft mc = Minecraft.getInstance();
+//		// 1.8.8+
+//		return new ScaledResolution(mc);
+//		// 1.7.10 - 1.8.2
+//		//return new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
+//		// 1.7.2
+//		//return new ScaledResolution(mc.gameSettings, mc.displayWidth, mc.displayHeight);
+//	}
 }

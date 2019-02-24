@@ -37,7 +37,7 @@ public class Customizations {
 			height = inHeight;
 			imageWidth = inImageWidth;
 			imageHeight = inImageHeight;
-			mc = Minecraft.getMinecraft();
+			mc = Minecraft.getInstance();
 		}
 		
 		public static void SetupGl()
@@ -97,7 +97,7 @@ public class Customizations {
 			{
 				try
 				{
-					mc.renderEngine.bindTexture(resource);
+					mc.getTextureManager().bindTexture(resource);
 					
 					Gui.drawModalRectWithCustomSizedTexture(x - width/2, y-height/2, 0, 0, 
 							width, height, imageWidth, imageHeight);	

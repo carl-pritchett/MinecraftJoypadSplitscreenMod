@@ -34,7 +34,7 @@ public class JoypadCalibrationMenu extends GuiScreen
 	private JoypadCalibrationList calibrationList = null;
 	private List<Integer> singleDirectionAxisSaved = null;
 
-	FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
+	FontRenderer fr = Minecraft.getInstance().getRenderManager().getFontRenderer();
 
 	String[] instructions = new String[] { "calibrationMenu.instructions1", "calibrationMenu.instructions2",
 			"calibrationMenu.save" };
@@ -76,7 +76,7 @@ public class JoypadCalibrationMenu extends GuiScreen
 
 		int xPos = width / 2 - bottomButtonWidth / 2;
 
-		GuiButton doneButton = new GuiButton(500, xPos, buttonYStart_bottom, bottomButtonWidth, 20, McObfuscationHelper.lookupString("gui.cancel"));
+		GuiButton doneButton = new GuiButton(500, xPos, buttonYStart_bottom, bottomButtonWidth, 20, McObfuscationHelper.lookupString("gui.cancel")) {};
 
 		// these buttons will be moved if we display axis values
 		if (joypadIndex != -1 && ControllerSettings.JoypadModInputLibrary.getController(joypadIndex).getAxisCount() > 0)
@@ -84,42 +84,45 @@ public class JoypadCalibrationMenu extends GuiScreen
 			int listStartY = (instructions.length + 3) * fr.FONT_HEIGHT + 20;
 			int entryHeight = 32;
 
-			calibrationList = new JoypadCalibrationList(Minecraft.getMinecraft(), width, height, listStartY,
+			calibrationList = new JoypadCalibrationList(Minecraft.getInstance(), width, height, listStartY,
 					height - 25, 0, entryHeight, joypadIndex, this);
 
 			xPos -= bottomButtonWidth / 2;
-			buttonList.add(new GuiButton(400, xPos, buttonYStart_bottom, bottomButtonWidth, 20,
-					McObfuscationHelper.lookupString("calibrationMenu.save")));
+			buttons.add(new GuiButton(400, xPos, buttonYStart_bottom, bottomButtonWidth, 20,
+					McObfuscationHelper.lookupString("calibrationMenu.save")) {});
 			xPos += bottomButtonWidth;
-			doneButton.xPosition += bottomButtonWidth / 2;
+			doneButton.x += bottomButtonWidth / 2;
 			doneButton.displayString = McObfuscationHelper.lookupString("gui.cancel");
 		}
 
-		buttonList.add(doneButton);
+		buttons.add(doneButton);
 
 	}
 
 	@Override
-	protected void mouseClicked(int par1, int par2, int par3)
+	public boolean mouseClicked(double par1, double par2, int par3)
 	{
 		try{
-		super.mouseClicked(par1, par2, par3);
+			super.mouseClicked(par1, par2, par3);
 		}
-		catch(java.io.IOException e){}
+		catch(Exception e){}
+
 		if (calibrationList == null)
-			return;
+			return false;
 
 		for (GuiButton guiButton : calibrationList.buttonList)
 		{
-			if (guiButton.mousePressed(Minecraft.getMinecraft(), par1, par2))
+			if (guiButton.mouseClicked(par1, par2, par3))
 			{
 				calibrationList.actionPerformed(guiButton);
 				break;
 			}
 		}
+		return true;
 	}
 
-	@Override
+	// TODO handle clicks
+	//@Override
 	protected void actionPerformed(GuiButton guiButton)
 	{
 		LogHelper.Info("Action performed on buttonID " + guiButton.id);
@@ -131,7 +134,7 @@ public class JoypadCalibrationMenu extends GuiScreen
 			InputDevice controller = ControllerSettings.JoypadModInputLibrary.getController(joypadIndex);
 			ControllerSettings.saveDeadZones(controller);
 			ControllerSettings.saveSingleDirectionAxis(controller);
-			((GuiButton) buttonList.get(1)).displayString = McObfuscationHelper.lookupString("gui.done");
+			((GuiButton) buttons.get(1)).displayString = McObfuscationHelper.lookupString("gui.done");
 			break;
 		case 500: // Done
 			if (joypadIndex >= 0)
@@ -151,7 +154,7 @@ public class JoypadCalibrationMenu extends GuiScreen
 	}
 
 	@Override
-	public void drawScreen(int par1, int par2, float par3)
+	public void render(int par1, int par2, float par3)
 	{
 		drawDefaultBackground();
 
@@ -189,7 +192,7 @@ public class JoypadCalibrationMenu extends GuiScreen
 
 		}
 
-		super.drawScreen(par1, par2, par3);
+		super.render(par1, par2, par3);
 	}
 
 	public void drawBoxWithText(int xStart, int yStart, int xEnd, int yEnd, String title, int boxColor, int textColor)
@@ -200,7 +203,8 @@ public class JoypadCalibrationMenu extends GuiScreen
 		int xPos = xStart + ((xEnd - xStart) / 2) - (stringWidth / 2);
 
 		this.drawHorizontalLine(xStart, xPos, yStart, boxColor);
-		int yTitleOffset = (fr.FONT_HEIGHT / 2) + (fr.getUnicodeFlag() ? 1 : -1);
+		// TODO check this - was getUniCodeFlag
+		int yTitleOffset = (fr.FONT_HEIGHT / 2) + (fr.getBidiFlag() ? 1 : -1);
 		this.write(xPos + 2, yStart - yTitleOffset, title, textColor);
 		xPos += stringWidth + 2;
 		this.drawHorizontalLine(xPos, xEnd, yStart, boxColor);

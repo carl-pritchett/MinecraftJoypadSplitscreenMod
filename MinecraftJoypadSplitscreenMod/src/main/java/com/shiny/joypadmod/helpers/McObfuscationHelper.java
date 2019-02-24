@@ -47,7 +47,7 @@ public class McObfuscationHelper
 	{
 
 		// de-obfuscated
-		return key.getKeyCode();
+		return key.getKey().getKeyCode();
 
 		// obfuscated 1.7.2
 		// return key.func_151463_i();

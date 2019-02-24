@@ -1,18 +1,26 @@
 package com.shiny.joypadmod.minecraftExtensions;
 
 import com.shiny.joypadmod.ControllerSettings;
-import com.shiny.joypadmod.helpers.LogHelper;
 
-import net.minecraft.util.MouseHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.MouseHelper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 // warning: small but non zero chance of this causing incompatibility with other mods
 public class JoypadMouseHelper extends MouseHelper
 {
+	private static final Logger LOGGER = LogManager.getLogger();
+
+	public JoypadMouseHelper(Minecraft minecraftIn) {
+		super(minecraftIn);
+	}
+
 	/**
 	 * Grabs the mouse cursor it doesn't move and isn't seen.
 	 */
 	@Override
-	public void grabMouseCursor()
+	public void grabMouse()
 	{
 		if (ControllerSettings.isInputEnabled() && !ControllerSettings.grabMouse)
 		{
@@ -20,14 +28,14 @@ public class JoypadMouseHelper extends MouseHelper
 			return;
 		}
 
-		super.grabMouseCursor();
+		super.grabMouse();
 	}
 
 	/**
 	 * Ungrabs the mouse cursor so it can be moved and set it to the center of the screen
 	 */
 	@Override
-	public void ungrabMouseCursor()
+	public void ungrabMouse()
 	{
 		if (ControllerSettings.isInputEnabled() && !ControllerSettings.grabMouse)
 		{
@@ -35,7 +43,7 @@ public class JoypadMouseHelper extends MouseHelper
 			return;
 		}
 
-		super.ungrabMouseCursor();
+		super.ungrabMouse();
 	}
 
 	/*
@@ -48,7 +56,7 @@ public class JoypadMouseHelper extends MouseHelper
 	{
 		try
 		{
-			LogHelper.Warn("JoypadMouseHelper being garbage collected. "
+			LOGGER.warn("JoypadMouseHelper being garbage collected. "
 					+ "If Minecraft not shutting down, this means another mod may have replaced it.");
 		}
 		catch (Throwable t)

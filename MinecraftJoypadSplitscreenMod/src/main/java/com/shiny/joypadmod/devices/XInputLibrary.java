@@ -14,6 +14,7 @@ import com.ivan.xinput.exceptions.XInputNotLoadedException;
 import com.ivan.xinput.listener.SimpleXInputDeviceListener;
 import com.ivan.xinput.listener.XInputDeviceListener;
 import com.ivan.xinput.natives.XInputNatives;
+
 import com.shiny.joypadmod.helpers.LogHelper;
 import com.shiny.joypadmod.inputevent.AxisInputEvent;
 import com.shiny.joypadmod.inputevent.ControllerInputEvent;

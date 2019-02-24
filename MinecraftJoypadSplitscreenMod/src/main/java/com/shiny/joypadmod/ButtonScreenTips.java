@@ -5,10 +5,10 @@ import com.shiny.joypadmod.helpers.McObfuscationHelper;
 import com.shiny.joypadmod.helpers.ModVersionHelper;
 import com.shiny.joypadmod.inputevent.ControllerBinding;
 
+import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
 
 public class ButtonScreenTips extends Gui {
@@ -73,8 +73,8 @@ public class ButtonScreenTips extends Gui {
 	public static HintString[] brTipsMenu = { new HintString("joy.guiLeftClick","menuHint.takeall","menuHint.placeall"), 
 			new HintString("joy.interact","menuHint.takehalf","menuHint.placeone") /* take half stack / drop 1 item */};
 	
-	Minecraft mc = Minecraft.getMinecraft();
-	FontRenderer fr = mc.fontRendererObj;
+	Minecraft mc = Minecraft.getInstance();
+	FontRenderer fr = Minecraft.getInstance().fontRenderer;
 	int currentX = 5;
 	int currentY = 20;
 	
@@ -122,7 +122,7 @@ public class ButtonScreenTips extends Gui {
 	
 	private void displayTips()
 	{
-		ScaledResolution scaled = ModVersionHelper.GetScaledResolution();
+		MainWindow scaled = mc.mainWindow;
         int width = scaled.getScaledWidth();
         int height = scaled.getScaledHeight();
 
@@ -153,7 +153,7 @@ public class ButtonScreenTips extends Gui {
             	}
         	}
         }
-        else if (mc.inGameHasFocus)
+        else if (mc.isGameFocused())
         {
         	boolean isHolding = false;
         	int maxLen = findMaxStringLength(blTipsGame, false, isHolding);

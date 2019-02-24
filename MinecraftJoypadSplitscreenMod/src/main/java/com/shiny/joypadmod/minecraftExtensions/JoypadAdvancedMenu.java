@@ -6,6 +6,7 @@ import com.shiny.joypadmod.helpers.McObfuscationHelper;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.util.text.ITextComponent;
 
 public class JoypadAdvancedMenu extends GuiScreen
 {
@@ -48,8 +49,8 @@ public class JoypadAdvancedMenu extends GuiScreen
 			addButton(buttonNum++, 300 + i, gameOptions[i], true);
 		}
 
-		buttonList.add(new GuiButton(500, width / 2 - parent.bottomButtonWidth / 2, height - 20,
-				parent.bottomButtonWidth, 20, parent.sGet("gui.done")));
+		buttons.add(new GuiButton(500, width / 2 - parent.bottomButtonWidth / 2, height - 20,
+				parent.bottomButtonWidth, 20, parent.sGet("gui.done")) {});
 	}
 
 	private int findMaxButtonWidth()
@@ -59,21 +60,22 @@ public class JoypadAdvancedMenu extends GuiScreen
 		for (int i = 0; i < otherButtons.length; i++)
 		{
 			String buttonString = createToggleString(otherButtons[i], true);
-			int width = mc.fontRendererObj.getStringWidth(buttonString);
+			int width = mc.getRenderManager().getFontRenderer().getStringWidth(buttonString);
 			maxWidth = width > maxWidth ? width : maxWidth;
 		}
 
 		for (int i = 0; i < gameOptions.length; i++)
 		{
 			String buttonString = createToggleString(gameOptions[i], true);
-			int width = mc.fontRendererObj.getStringWidth(buttonString);
+			int width = mc.getRenderManager().getFontRenderer().getStringWidth(buttonString);
 			maxWidth = width > maxWidth ? width : maxWidth;
 		}
 
 		return maxWidth;
 	}
 
-	@Override
+	// TODO handle button press
+	//@Override
 	protected void actionPerformed(GuiButton guiButton)
 	{
 		LogHelper.Info("Action performed on " + guiButton.displayString);
@@ -102,7 +104,7 @@ public class JoypadAdvancedMenu extends GuiScreen
 	}
 
 	@Override
-	public void drawScreen(int par1, int par2, float par3)
+	public void render(int par1, int par2, float par3)
 	{
 		drawDefaultBackground();
 
@@ -111,7 +113,7 @@ public class JoypadAdvancedMenu extends GuiScreen
 		String titleText = String.format("Joypad Mod - %s", parent.sGet("controlMenu.advanced"));
 		this.drawCenteredString(parent.getFontRenderer(), titleText, width / 2, labelYStart, -1);
 
-		super.drawScreen(par1, par2, par3);
+		super.render(par1, par2, par3);
 	}
 
 	private void addButton(int buttonNum, int id, String code, boolean isToggle)
@@ -125,8 +127,8 @@ public class JoypadAdvancedMenu extends GuiScreen
 	{
 		int buttonBase = buttonNum % buttonsPerRow;
 		String buttonString = isToggle ? createToggleString(code, toggleValue) : McObfuscationHelper.lookupString(code);
-		buttonList.add(new GuiButton(id, buttonXStart_top + buttonWidth * buttonBase + buttonXSpacing * buttonBase,
-				buttonYStart_top + (buttonNum / buttonsPerRow) * buttonYSpacing, buttonWidth, 20, buttonString));
+		buttons.add(new GuiButton(id, buttonXStart_top + buttonWidth * buttonBase + buttonXSpacing * buttonBase,
+				buttonYStart_top + (buttonNum / buttonsPerRow) * buttonYSpacing, buttonWidth, 20, buttonString) {});
 	}
 
 	private String createToggleString(String code, boolean on)

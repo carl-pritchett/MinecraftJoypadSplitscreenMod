@@ -4,6 +4,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.MainWindow;
+import net.minecraft.client.gui.GuiListExtended;
 import org.lwjgl.input.Mouse;
 
 import com.shiny.joypadmod.ControllerSettings;
@@ -15,12 +17,12 @@ import com.shiny.joypadmod.inputevent.ControllerUtils;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.ScaledResolution;
+//import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraftforge.fml.client.GuiScrollingList;
+//import net.minecraftforge.fml.client.GuiScrollingList;
 
 
-public class JoypadCalibrationList extends GuiScrollingList
+public class JoypadCalibrationList extends GuiListExtended// GuiScrollingList
 {
 	private Minecraft mc;
 	private int width;
@@ -31,30 +33,31 @@ public class JoypadCalibrationList extends GuiScrollingList
 	public JoypadCalibrationList(Minecraft client, int width, int height, int top, int bottom, int left,
 			int entryHeight, int joypadIndex, JoypadCalibrationMenu parent)
 	{
-		super(client, width, height, top, bottom, left, entryHeight);
-		mc = Minecraft.getMinecraft();
+		super(client, width, height, top, bottom, entryHeight);
+		mc = Minecraft.getInstance();
 		this.width = width;
 		this.entryHeight = entryHeight;
 		this.joypadIndex = joypadIndex;
 		this.parent = parent;
 	}
 
-	@Override
-	protected int getSize()
-	{
-		int ret = ControllerSettings.JoypadModInputLibrary.getController(joypadIndex).getAxisCount();
-		if (ret > 0)
-		{
-			int theHeight = this.bottom - this.top;
-			// make sure all items will appear at the top
-			if (ret * entryHeight < theHeight)
-				ret = (int) Math.floor(theHeight / entryHeight);
-		}
+//	@Override
+//	protected int getSize()
+//	{
+//		int ret = ControllerSettings.JoypadModInputLibrary.getController(joypadIndex).getAxisCount();
+//		if (ret > 0)
+//		{
+//			int theHeight = this.bottom - this.top;
+//			// make sure all items will appear at the top
+//			if (ret * entryHeight < theHeight)
+//				ret = (int) Math.floor(theHeight / entryHeight);
+//		}
+//
+//		return Math.max(ControllerSettings.JoypadModInputLibrary.getController(joypadIndex).getAxisCount(), ret);
+//	}
 
-		return Math.max(ControllerSettings.JoypadModInputLibrary.getController(joypadIndex).getAxisCount(), ret);
-	}
-
-	@Override
+	//TODO find override
+//	@Override
 	protected void elementClicked(int index, boolean doubleClick)
 	{}
 
@@ -68,7 +71,6 @@ public class JoypadCalibrationList extends GuiScrollingList
 	protected void drawBackground()
 	{
 		// TODO Auto-generated method stub
-
 	}
 
 	public void actionPerformed(GuiButton guiButton)
@@ -117,13 +119,13 @@ public class JoypadCalibrationList extends GuiScrollingList
 	public List<GuiButton> buttonList = new ArrayList<GuiButton>();
 
 	@Override
-	protected void drawSlot(int var1, int var2, int var3, int var4, Tessellator var5)
+	protected void drawSlot(int var1, int var2, int var3, int var4, int var5, int var6, float var7)
 	{
-		final ScaledResolution scaledResolution = ModVersionHelper.GetScaledResolution();
+		final MainWindow scaledResolution = Minecraft.getInstance().mainWindow;
 
-		final int k = Mouse.getX() * scaledResolution.getScaledWidth() / mc.displayWidth;
+		final int k = Mouse.getX() * scaledResolution.getScaledWidth() / mc.mainWindow.getHeight();
 		final int i1 = scaledResolution.getScaledHeight() - Mouse.getY() * scaledResolution.getScaledHeight()
-				/ mc.displayHeight - 1;
+				/ mc.mainWindow.getHeight() - 1;
 
 		if (var1 < ControllerSettings.JoypadModInputLibrary.getController(joypadIndex).getAxisCount())
 		{
@@ -134,8 +136,8 @@ public class JoypadCalibrationList extends GuiScrollingList
 			{
 				if (buttonList.size() > i)
 				{
-					buttonList.get(i).yPosition = var3 + 5;
-					buttonList.get(i).func_191745_a(Minecraft.getMinecraft(), k, i1, 0);
+					buttonList.get(i).y = var3 + 5;
+					buttonList.get(i).render(k, i1, 0);
 				}
 			}
 		}
@@ -146,8 +148,8 @@ public class JoypadCalibrationList extends GuiScrollingList
 		InputDevice controller = ControllerSettings.JoypadModInputLibrary.getController(joypadIndex);
 		int yPos = yStart;
 		DecimalFormat df = new DecimalFormat("#0.00");
-		int autoButtonWidth = mc.fontRendererObj.getStringWidth(McObfuscationHelper.lookupString("calibrationMenu.auto")) + 10;
-		int resetButtonWidth = mc.fontRendererObj.getStringWidth(McObfuscationHelper.lookupString("controls.reset")) + 10;
+		int autoButtonWidth = mc.getRenderManager().getFontRenderer().getStringWidth(McObfuscationHelper.lookupString("calibrationMenu.auto")) + 10;
+		int resetButtonWidth = mc.getRenderManager().getFontRenderer().getStringWidth(McObfuscationHelper.lookupString("controls.reset")) + 10;
 		int directionButWidth = 15;
 
 		int maxSize = parent.fr.getStringWidth("X Axis:");
@@ -177,18 +179,18 @@ public class JoypadCalibrationList extends GuiScrollingList
 			{
 				toggleSign = McObfuscationHelper.symGet(McObfuscationHelper.JSyms.fCircle);
 			}
-			buttonList.add(new GuiButton(axisNum + 400, xPos2, yPos + yOffset, directionButWidth, 20, "" + toggleSign));
+			buttonList.add(new GuiButton(axisNum + 400, xPos2, yPos + yOffset, directionButWidth, 20, "" + toggleSign){});
 			xPos2 -= directionButWidth - xOffset;
 
-			buttonList.add(new GuiButton(axisNum + 300, xPos2, yPos + yOffset, directionButWidth, 20, ">"));
+			buttonList.add(new GuiButton(axisNum + 300, xPos2, yPos + yOffset, directionButWidth, 20, ">"){});
 			xPos2 -= resetButtonWidth - xOffset;
 			buttonList.add(new GuiButton(axisNum + 200, xPos2, yPos + yOffset, resetButtonWidth, 20,
-					McObfuscationHelper.lookupString("controls.reset")));
+					McObfuscationHelper.lookupString("controls.reset")){});
 			xPos2 -= directionButWidth - xOffset;
-			buttonList.add(new GuiButton(axisNum + 100, xPos2, yPos + yOffset, directionButWidth, 20, "<"));
+			buttonList.add(new GuiButton(axisNum + 100, xPos2, yPos + yOffset, directionButWidth, 20, "<"){});
 			xPos2 -= autoButtonWidth - xOffset;
 			buttonList.add(new GuiButton(axisNum, xPos2, yPos + yOffset, autoButtonWidth, 20,
-					McObfuscationHelper.lookupString("calibrationMenu.auto")));
+					McObfuscationHelper.lookupString("calibrationMenu.auto")){});
 
 			/*
 			 * buttonList.add(new GuiButton(axisNum, xPos, yPos + yOffset, autoButtonWidth, 20, McObfuscationHelper.lookupString("calibrationMenu.auto"))); buttonList.add(new GuiButton(axisNum + 100,

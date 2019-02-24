@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.minecraft.util.Util;
 import org.lwjgl.input.Keyboard;
 
 import com.shiny.joypadmod.devices.DefaultAxisMappings;
@@ -35,7 +36,7 @@ import com.shiny.joypadmod.inputevent.ControllerUtils;
 import com.shiny.joypadmod.lwjglVirtualInput.VirtualMouse;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.settings.GameSettings;
+import net.minecraft.client.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 
 public class ControllerSettings
@@ -161,7 +162,7 @@ public class ControllerSettings
 
 		currentDisplayedMap = joyIndex;
 
-		GameSettings settings = Minecraft.getMinecraft().gameSettings;
+		GameSettings settings = Minecraft.getInstance().gameSettings;
 		LogHelper.Info("Setting default joy binding map");
 
 		joyBindingsMap.clear();
@@ -208,13 +209,13 @@ public class ControllerSettings
 				new ControllerBinding("joy.attack", "Attack",
 						new AxisInputEvent(joyIndex, aMap.RT(), thresholdToUse, defaultAxisDeadZone),
 						new int[] { -100 }, 0, EnumSet.of(BindingOptions.GAME_BINDING, BindingOptions.REPEAT_IF_HELD,
-								BindingOptions.CATEGORY_GAMEPLAY)));
+						BindingOptions.CATEGORY_GAMEPLAY)));
 
 		joyBindingsMap.put("joy.use",
 				new ControllerBinding("joy.use", "Use",
 						new AxisInputEvent(joyIndex, aMap.LT(), defaultAxisThreshhold, defaultAxisDeadZone),
 						new int[] { -99 }, 0, EnumSet.of(BindingOptions.GAME_BINDING, BindingOptions.REPEAT_IF_HELD,
-								BindingOptions.CATEGORY_GAMEPLAY)));
+						BindingOptions.CATEGORY_GAMEPLAY)));
 
 		joyBindingsMap.put("joy.interact",
 				new ControllerBinding("joy.interact", "Interact", new ButtonInputEvent(joyIndex, bMap.X(), 1),
@@ -242,7 +243,7 @@ public class ControllerSettings
 		joyBindingsMap.put("joy.sprint",
 				new ControllerBinding("joy.sprint", "Sprint", new ButtonInputEvent(joyIndex, bMap.RS(), 1),
 						new int[] { Keyboard.KEY_LCONTROL }, 0, EnumSet.of(BindingOptions.GAME_BINDING,
-								BindingOptions.REPEAT_IF_HELD, BindingOptions.CATEGORY_GAMEPLAY)));
+						BindingOptions.REPEAT_IF_HELD, BindingOptions.CATEGORY_GAMEPLAY)));
 
 		joyBindingsMap.put("joy.menu", new ControllerBinding("joy.menu", "Open menu",
 				new ButtonInputEvent(joyIndex, bMap.Start(), 1), new int[] { Keyboard.KEY_ESCAPE }, 0,
@@ -251,7 +252,7 @@ public class ControllerSettings
 		joyBindingsMap.put("joy.shiftClick",
 				new ControllerBinding("joy.shiftClick", "Shift-click", new ButtonInputEvent(joyIndex, bMap.B(), 1),
 						new int[] { Keyboard.KEY_LSHIFT, -100 }, 0, EnumSet.of(BindingOptions.MENU_BINDING,
-								BindingOptions.REPEAT_IF_HELD, BindingOptions.CATEGORY_INVENTORY)));
+						BindingOptions.REPEAT_IF_HELD, BindingOptions.CATEGORY_INVENTORY)));
 
 		joyBindingsMap.put("joy.cameraX+",
 				new ControllerBinding("joy.cameraX+", "Look right",
@@ -263,13 +264,13 @@ public class ControllerSettings
 				new ControllerBinding("joy.cameraX-", "Look left",
 						new AxisInputEvent(joyIndex, aMap.RSx(), defaultAxisThreshhold * -1, defaultAxisDeadZone), null,
 						0, EnumSet.of(BindingOptions.GAME_BINDING, BindingOptions.REPEAT_IF_HELD,
-								BindingOptions.CATEGORY_GAMEPLAY)));
+						BindingOptions.CATEGORY_GAMEPLAY)));
 
 		joyBindingsMap.put("joy.cameraY-",
 				new ControllerBinding("joy.cameraY-", "Look up",
 						new AxisInputEvent(joyIndex, aMap.RSy(), defaultAxisThreshhold * -1, defaultAxisDeadZone), null,
 						0, EnumSet.of(BindingOptions.GAME_BINDING, BindingOptions.REPEAT_IF_HELD,
-								BindingOptions.CATEGORY_GAMEPLAY)));
+						BindingOptions.CATEGORY_GAMEPLAY)));
 
 		joyBindingsMap.put("joy.cameraY+",
 				new ControllerBinding("joy.cameraY+", "Look down",
@@ -616,7 +617,7 @@ public class ControllerSettings
 
 			String axisStr = config.getConfigFileSetting("-SingleDirectionAxis-." + controller.getName());
 			if (axisStr != null) // should never be null (default to "false")
-									// but just in case
+			// but just in case
 			{
 				// handle the case where a 6 axis xbox controller is detected
 				// and they haven't manually applied any SDA settings
@@ -638,7 +639,7 @@ public class ControllerSettings
 
 			config.updatePreferedJoy(controllerNo, controller.getName());
 
-			Minecraft.getMinecraft().gameSettings.pauseOnLostFocus = false;
+			Minecraft.getInstance().gameSettings.pauseOnLostFocus = false;
 			JoypadMouse.AxisReader.centerCrosshairs();
 			checkIfBindingsNeedUpdating();
 			unpressAll();
@@ -705,7 +706,8 @@ public class ControllerSettings
 	{
 		if (suspend)
 		{
-			suspendStart = Minecraft.getSystemTime();
+			//suspendStart = Minecraft.getSystemTime();
+			suspendStart = Util.nanoTime();
 			suspendMax = maxTicksToSuspend;
 		}
 		ControllerSettings.suspendControllerInput = suspend;
@@ -716,7 +718,7 @@ public class ControllerSettings
 	{
 		if (ControllerSettings.suspendControllerInput)
 		{
-			if (Minecraft.getSystemTime() - suspendStart > suspendMax)
+			if (Util.nanoTime() - suspendStart > suspendMax)
 			{
 				ControllerSettings.suspendControllerInput = false;
 			}
@@ -855,7 +857,7 @@ public class ControllerSettings
 	private static Iterator<Entry<String, ControllerBinding>> menuBindIterator;
 
 	private static ControllerBinding getNextBinding(Iterator<Entry<String, ControllerBinding>> current,
-			BindingOptions target)
+													BindingOptions target)
 	{
 		while (current.hasNext())
 		{
@@ -1020,7 +1022,7 @@ public class ControllerSettings
 				if ((b.bindingOptions.contains(BindingOptions.GAME_BINDING)
 						&& entry.getValue().bindingOptions.contains(BindingOptions.GAME_BINDING))
 						|| (b.bindingOptions.contains(BindingOptions.MENU_BINDING)
-								&& entry.getValue().bindingOptions.contains(BindingOptions.MENU_BINDING)))
+						&& entry.getValue().bindingOptions.contains(BindingOptions.MENU_BINDING)))
 					return true;
 			}
 		}

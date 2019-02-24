@@ -3,6 +3,7 @@ package com.shiny.joypadmod.inputevent;
 import java.util.EnumSet;
 import java.util.Locale;
 
+import net.minecraft.util.Util;
 import org.lwjgl.input.Keyboard;
 
 import com.shiny.joypadmod.ControllerSettings;
@@ -191,7 +192,7 @@ public class ControllerBinding
 
 		// only proceed if this has been set to active through a wasPressed result
 		// or if it was just released
-		if ((autoHandle) && (bRet && (Minecraft.getSystemTime() - lastTick >= delay))
+		if ((autoHandle) && (bRet && (Util.nanoTime() - lastTick >= delay))
 				|| (wasReleased && this.keyCodes != null))
 		{
 			for (int i : keyCodes)
@@ -212,7 +213,7 @@ public class ControllerBinding
 				}
 			}
 			if (bRet)
-				lastTick = Minecraft.getSystemTime();
+				lastTick = Util.nanoTime();
 		}
 
 		return bRet;
@@ -241,7 +242,7 @@ public class ControllerBinding
 				sendPressKey = toggleState;
 			}
 
-			if (autoHandle && Minecraft.getSystemTime() - lastTick >= delay)
+			if (autoHandle && Util.nanoTime() - lastTick >= delay)
 			{
 				for (int i : keyCodes)
 				{
@@ -252,8 +253,8 @@ public class ControllerBinding
 					}
 
 					// ignore escape key bindings from calibration menu
-					if (i == Keyboard.KEY_ESCAPE && Minecraft.getMinecraft().currentScreen != null
-							&& Minecraft.getMinecraft().currentScreen instanceof JoypadCalibrationMenu)
+					if (i == Keyboard.KEY_ESCAPE && Minecraft.getInstance().currentScreen != null
+							&& Minecraft.getInstance().currentScreen instanceof JoypadCalibrationMenu)
 						continue;
 					if (sendPressKey)
 					{
@@ -264,7 +265,7 @@ public class ControllerBinding
 						VirtualKeyboard.releaseKey(i, true);
 					}
 				}
-				lastTick = Minecraft.getSystemTime();
+				lastTick = Util.nanoTime();
 			}
 		}
 		return bRet;
