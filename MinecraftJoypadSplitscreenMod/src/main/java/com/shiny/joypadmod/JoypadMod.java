@@ -7,6 +7,7 @@ import com.shiny.joypadmod.lwjglVirtualInput.VirtualKeyboard;
 import com.shiny.joypadmod.lwjglVirtualInput.VirtualMouse;
 import com.shiny.joypadmod.minecraftExtensions.JoypadMouseHelper;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
@@ -51,14 +52,17 @@ public class JoypadMod
 
 		// Register ourselves for server and other game events we are interested in
 		MinecraftForge.EVENT_BUS.register(this);
-
 //		MinecraftForge.EVENT_BUS.register(new CommonEvents());
 //		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ModConfigs.build());
 	}
 
+
 	private void setup(final FMLCommonSetupEvent event) {
 		LOGGER.info("preInit");
-//TODO		controllerSettings = new ControllerSettings(event.getSuggestedConfigurationFile());
+
+		// TODO Configuration files don't exist anymore
+//		controllerSettings = new ControllerSettings(event.getSuggestedConfigurationFile());
+		controllerSettings = new ControllerSettings(null);
 
 		LOGGER.info("init");
 		try
@@ -79,7 +83,6 @@ public class JoypadMod
 	}
 
 
-	//@EventHandler
 	public void postInit()
 	{
 		LOGGER.info("postInit");

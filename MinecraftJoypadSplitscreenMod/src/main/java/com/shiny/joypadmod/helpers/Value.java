@@ -46,6 +46,9 @@ public class Value {
     }
 
     public String getString() {
+        if (strVal != null) return strVal;
+        if (boolVal != null) return boolVal.toString();
+        if (intVal != null) return intVal.toString();
         return strVal;
     }
 
