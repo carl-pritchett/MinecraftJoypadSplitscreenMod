@@ -60,6 +60,8 @@ public class JoypadMod
 	private void setup(final FMLCommonSetupEvent event) {
 		LOGGER.info("preInit");
 
+		MouseWrapper.create();
+
 		// TODO Configuration files don't exist anymore
 //		controllerSettings = new ControllerSettings(event.getSuggestedConfigurationFile());
 		controllerSettings = new ControllerSettings(null);

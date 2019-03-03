@@ -4,9 +4,10 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.shiny.joypadmod.MouseWrapper;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.gui.GuiListExtended;
-import org.lwjgl.input.Mouse;
+//import org.lwjgl.input.Mouse;
 
 import com.shiny.joypadmod.ControllerSettings;
 import com.shiny.joypadmod.devices.InputDevice;
@@ -123,9 +124,10 @@ public class JoypadCalibrationList extends GuiListExtended// GuiScrollingList
 	{
 		final MainWindow scaledResolution = Minecraft.getInstance().mainWindow;
 
-		final int k = Mouse.getX() * scaledResolution.getScaledWidth() / mc.mainWindow.getHeight();
-		final int i1 = scaledResolution.getScaledHeight() - Mouse.getY() * scaledResolution.getScaledHeight()
-				/ mc.mainWindow.getHeight() - 1;
+		// TODO should be X and Y not DY and DY
+		final int k = (int)(MouseWrapper.getDX() * scaledResolution.getScaledWidth() / mc.mainWindow.getHeight());
+		final int i1 = (int)(scaledResolution.getScaledHeight() - MouseWrapper.getDY() * scaledResolution.getScaledHeight()
+				/ mc.mainWindow.getHeight() - 1);
 
 		if (var1 < ControllerSettings.JoypadModInputLibrary.getController(joypadIndex).getAxisCount())
 		{

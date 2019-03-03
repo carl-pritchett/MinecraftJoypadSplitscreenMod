@@ -1,7 +1,8 @@
 package com.shiny.joypadmod.devices;
 
-import org.lwjgl.LWJGLException;
-import org.lwjgl.input.Controllers;
+//import org.lwjgl.LWJGLException;
+import org.lwjgl.glfw.GLFW;
+//import org.lwjgl.input.Controllers;
 
 import com.shiny.joypadmod.helpers.LogHelper;
 
@@ -9,22 +10,25 @@ public class LWJGLibrary extends InputLibrary {
 	
 	LWJGLDeviceWrapper theDevice;
 	LWJGLDeviceWrapper tempDevice;
-	
+
+
+	// TODO not sure of exception replacement
 	@Override
-	public void create() throws LWJGLException {
-		Controllers.create();
+	public void create() { //throws LWJGLException {
+		//Controllers.create();
 		theDevice = new LWJGLDeviceWrapper(0);
 		tempDevice = new LWJGLDeviceWrapper(0);
 	}
 
 	@Override
 	public Boolean isCreated() {
-		return Controllers.isCreated();		
+		return true;
+//		return Controllers.isCreated();
 	}
 
 	@Override
 	public void clearEvents() {
-		Controllers.clearEvents();
+		//Controllers.clearEvents();
 	}
 
 	@Override
@@ -35,43 +39,62 @@ public class LWJGLibrary extends InputLibrary {
 
 	@Override
 	public int getControllerCount() {
-		return Controllers.getControllerCount();
+		for (int i = 0; i <= 15; i++) {
+			if (GLFW.glfwGetJoystickName(i) == null) {
+				return i+1;
+			}
+		}
+		return 0;
 	}
 
 	@Override
 	public InputDevice getEventSource() {
-		tempDevice.setIndex(Controllers.getEventSource().getIndex());		
+
+		// TODO
+		//tempDevice.setIndex(Controllers.getEventSource().getIndex());
 		return tempDevice;
 	}
 
 	@Override
 	public int getEventControlIndex() {
-		return Controllers.getEventControlIndex();
+		// TODO
+		return 0;
+		//return Controllers.getEventControlIndex();
 	}
 
 	@Override
 	public Boolean isEventButton() {
-		return Controllers.isEventButton();
+		// TODO
+		return false;
+//		return Controllers.isEventButton();
 	}
 
 	@Override
 	public Boolean isEventAxis() {
-		return Controllers.isEventAxis();
+		// TODO
+		return false;
+//		return Controllers.isEventAxis();
 	}
 
 	@Override
 	public Boolean isEventPovX() {
-		return Controllers.isEventPovX();
+		// TODO
+		return false;
+//		return Controllers.isEventPovX();
 	}
 
 	@Override
 	public Boolean isEventPovY() {
-		return Controllers.isEventPovY();
+		// TODO
+		return false;
+//		return Controllers.isEventPovY();
 	}
 
 	@Override
 	public Boolean next() {
-		return Controllers.next();
+		// TODO
+		return false;
+		// return Controllers.next();
 	}
 
 	@Override

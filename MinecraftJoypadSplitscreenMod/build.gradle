@@ -6,12 +6,15 @@ buildscript {
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.4'
     }
 }
 
 apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'com.github.johnrengelman.shadow'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 //apply plugin: 'eclipse'
+
 
 version = "1.13-2-25.0.50"
 group = "com.shiny.joypadmod"
@@ -26,12 +29,6 @@ allprojects {
             maven { url "https://jitpack.io" }
         }
    }
-
-//sourceCompatibility = targetCompatibility = "1.8" // Need this here so eclipse task generates correctly.
-//compileJava {
-//    sourceCompatibility = targetCompatibility = "1.8"
-//}
-
 
 minecraft {
     //version = "1.13-2-25.0.50"
@@ -48,117 +45,81 @@ minecraft {
     // These can be tweaked, removed, or duplicated as needed.
     runs {
         client {
-            workingDirectory project.file('run')
+            workingDirectory project.file('run').canonicalPath
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
-
-            mods {
-                joypadmod {
-                    source sourceSets.main
-                }
-            }
+//            source sourceSets.main
+//            mods {
+//                joypadmod {
+//                    source sourceSets.main
+//                }
+//            }
         }
 
         server {
-            workingDirectory project.file('run')
+            workingDirectory project.file('run').canonicalPath
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
-
-            mods {
-                joypadmod {
-                    source sourceSets.main
-                }
-            }
+            source sourceSets.main
+//            mods {
+//                joypadmod {
+//                    source sourceSets.main
+//                }
+//            }
         }
     }
 }
 
-
-//configurations {
-//    embed
-//    compile.extendsFrom(embed)
-//}
-
 configurations {
-    shade
-    compile.extendsFrom shade
+    //shade
+    //compile.extendsFrom shade
+
+    contained {
+        transitive = false
+    }
+
 }
 
 dependencies {
-    // you may put jars on which you depend on in ./libs
-    // or you may define them like so..
-    //compile "some.group:artifact:version:classifier"
-    //compile "some.group:artifact:version"
     minecraft 'net.minecraftforge:forge:1.13.2-25.0.50'
-    // real examples
-    //compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
-    //compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
-    shade 'org.lwjgl.lwjgl:lwjgl:2.+'
-	
+    //shade 'org.lwjgl.lwjgl:lwjgl:2.+'
+    //compile  'org.lwjgl.lwjgl:lwjgl:2.+'
+    compile 'org.lwjgl:lwjgl:3.1.6'
+    //'org.lwjgl', name: 'lwjgl', version: '3.1.0'
 	//shade 'com.github.strikerx3:jxinput:master-SNAPSHOT'
-    shade 'com.github.strikerx3:jxinput:0.8'
-
-    // the 'provided' configuration is for optional dependencies that exist at compile-time but might not at runtime.
-    //provided 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-
-    // the deobf configurations:  'deobfCompile' and 'deobfProvided' are the same as the normal compile and provided,
-    // except that these dependencies get remapped to your current MCP mappings
-    //deobfCompile 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-    //deobfProvided 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-
-    // for more info...
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
-
+    //shade 'com.github.strikerx3:jxinput:0.8'
+    compile  'com.github.strikerx3:jxinput:0.8'
+    contained  'com.github.strikerx3:jxinput:0.8'
 }
 
-//jar {
-//    configurations.shade.each { dep ->
-//        from(project.zipTree(dep)){
-//            exclude 'META-INF', 'META-INF/**'
-//        }
+// TODO causes build fail - unknown attribute mapping
+//shadowJar {
+//    classifier = null
+//    //classifier '' // Replace the default JAR
+//    dependencies {
+//        include dependency("org.lwjgl.lwjgl:lwjgl:2.+")
+//        include dependency("com.github.strikerx3:jxinput:0.8")
 //    }
 //}
 
-
-
-//processResources
-//{
-//    // this will ensure that this task is redone when the versions change.
-//    inputs.property "version", project.version
-//    inputs.property "mcversion", project.minecraft.version
-//
-//    // replace stuff in mcmod.info, nothing else
-//    from(sourceSets.main.resources.srcDirs) {
-//        include 'mcmod.info'
-//
-//        // replace version and mcversion
-//        expand 'version':project.version, 'mcversion':project.minecraft.version
-//    }
-//
-//    // copy everything else, thats not the mcmod.info
-//    from(sourceSets.main.resources.srcDirs) {
-//        exclude 'mcmod.info'
-//    }
-//}
-
-sourceSets {
-    main.compileClasspath += configurations.shade
-    main.runtimeClasspath += configurations.shade
-}
-
-// Example for how to get properties into the manifest for reading by the runtime..
 jar {
+
+    from(configurations.contained.files) {
+        include '*'
+        into 'META-INF/libraries'
+    }
+
     manifest {
         attributes([
+                'ContainedDeps': configurations.contained.files.collect { it.name }.join(' '),
                 "Specification-Title": "JoypadMod",
                 "Specification-Vendor": "JoypadMod",
                 "Specification-Version": "1.13-2-25.0.50", // We are version 1 of ourselves
@@ -169,10 +130,72 @@ jar {
         ])
     }
 
-    configurations.shade.each { dep ->
-        from(project.zipTree(dep)){
-            exclude 'META-INF', 'META-INF/**'
-        }
+//    configurations.shade.each { dep ->
+//        from(project.zipTree(dep)){
+//            exclude 'META-INF', 'META-INF/**'
+//        }
+//    }
+}
+
+//shadowJar {
+//    classifier = ""
+//    dependencies {
+//        include dependency("org.lwjgl.lwjgl:lwjgl:2.+")
+//        include dependency("com.github.strikerx3:jxinput:0.8")
+//    }
+//
+//}
+//tasks.build.dependsOn shadowJar
+//reobf { shadowJar { mappingType = "SEARGE" } }
+//tasks.reobfShadowJar.mustRunAfter shadowJar
+//
+//reobf {
+//
+//    shadowJar {
+//        //mappings = new File("/")
+//    }
+//}
+//tasks.build.dependsOn reobfShadowJar
+//tasks.build.dependsOn shadowJar
+
+//reobf {
+//    shadowJar{}
+//}
+
+//tasks.build.dependsOn reobfShadowJar
+////tasks.reobfShadowJar.mustRunAfter shadowJar
+////tasks.build.dependsOn sourceJar, shadowJar
+//tasks.build.dependsOn reobfShadowJar
+//reobfJar.dependsOn jar
+//build.dependsOn shadowJar
+
+
+processResources
+{
+    // this will ensure that this task is redone when the versions change.
+//    inputs.property "version", project.version
+//    inputs.property "mcversion", project.minecraft.version
+    inputs.property 'version', project.version
+    inputs.property 'mcversion', '1.13.2'
+//    // replace stuff in mcmod.info, nothing else
+//    from(sourceSets.main.resources.srcDirs) {
+//        include 'mcmod.info'
+//
+//        // replace version and mcversion
+//        expand 'version':project.version, 'mcversion':project.minecraft.version
+//    }
+
+    // copy everything else, thats not the mcmod.info
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
     }
 }
+
+//sourceSets {
+//    main.compileClasspath += configurations.shade
+//    main.runtimeClasspath += configurations.shade
+//}
+
+
+
 

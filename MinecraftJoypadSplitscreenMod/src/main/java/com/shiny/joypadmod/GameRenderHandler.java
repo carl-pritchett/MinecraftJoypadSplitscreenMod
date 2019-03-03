@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.util.Util;
-import org.lwjgl.input.Mouse;
+//import org.lwjgl.input.Mouse;
 
 import com.shiny.joypadmod.helpers.Customizations;
 import com.shiny.joypadmod.helpers.LogHelper;
@@ -62,10 +62,11 @@ public class GameRenderHandler
 				if (InGuiCheckNeeded())
 				{
 					ControllerSettings.JoypadModInputLibrary.poll();
-					if (Mouse.isInsideWindow()
+
+					if (MouseWrapper.isInsideWindow()
 							&& Util.nanoTime() - JoypadMouse.AxisReader.lastNon0Reading > 1000)
 					{
-						if (Mouse.getDX() != 0 || Mouse.getDY() != 0)
+						if (MouseWrapper.getDX() != 0 || MouseWrapper.getDY() != 0)
 						{
 							if (ControllerSettings.loggingLevel > 2 && !mouseDetected)
 							{

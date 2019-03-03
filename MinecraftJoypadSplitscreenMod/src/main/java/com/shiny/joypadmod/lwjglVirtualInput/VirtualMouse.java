@@ -3,8 +3,8 @@ package com.shiny.joypadmod.lwjglVirtualInput;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 
-import org.lwjgl.input.Mouse;
-
+//import org.lwjgl.input.Mouse;
+import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import com.shiny.joypadmod.ControllerSettings;
 import com.shiny.joypadmod.helpers.LogHelper;
 
@@ -52,9 +52,10 @@ public class VirtualMouse
 
 	private static Field getSetField(String fieldName) throws NoSuchFieldException, SecurityException
 	{
-		Field f = Mouse.class.getDeclaredField(fieldName);
-		f.setAccessible(true);
-		return f;
+//		Field f = Mouse.class.getDeclaredField(fieldName);
+//		f.setAccessible(true);
+//		return f;
+		return null;
 	}
 
 	public static boolean isCreated()

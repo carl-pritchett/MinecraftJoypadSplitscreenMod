@@ -3,7 +3,8 @@ package com.shiny.joypadmod.lwjglVirtualInput;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 
-import org.lwjgl.input.Keyboard;
+//import org.lwjgl.input.Keyboard;
+import org.lwjgl.glfw.GLFW;
 
 import com.shiny.joypadmod.ControllerSettings;
 import com.shiny.joypadmod.helpers.LogHelper;
@@ -14,6 +15,15 @@ public class VirtualKeyboard
 	private static Field keyBufferField;
 	private static Byte[] keyState;
 	private static boolean created = false;
+
+	// TODO Stubbed out Keyboard until mapping to GLFW
+	private static class Keyboard {
+		public static int KEYBOARD_SIZE = 0;
+
+		public static String getKeyName(int code) {
+			return "DUMMY_KEY_NAME";
+		}
+	}
 
 	/**
 	 * VirtualKeyboard cannot be constructed.

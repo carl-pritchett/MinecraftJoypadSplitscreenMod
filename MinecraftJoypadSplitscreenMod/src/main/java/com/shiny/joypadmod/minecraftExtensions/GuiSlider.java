@@ -1,7 +1,8 @@
 package com.shiny.joypadmod.minecraftExtensions;
 
 import net.minecraft.util.text.translation.LanguageMap;
-import org.lwjgl.input.Mouse;
+import org.lwjgl.glfw.GLFW;
+//import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import com.shiny.joypadmod.helpers.McObfuscationHelper;
@@ -64,7 +65,9 @@ public class GuiSlider extends GuiButton
 	public boolean mouseDragged(double mouseX, double mouseY, int button, double endX, double endY)
 	{
 		// something is awry with this receiving the mouse released event so check manually if button pressed
-		if (!Mouse.isButtonDown(0))
+		// TODO Need to get window
+		int currentWindow = 0;
+		if (!(GLFW.glfwGetMouseButton(currentWindow, 0) == GLFW.GLFW_PRESS))
 			this.dragging = false;
 
 		if (this.visible)

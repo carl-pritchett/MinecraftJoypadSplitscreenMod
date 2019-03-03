@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import net.minecraft.util.Util;
-import org.lwjgl.input.Keyboard;
+//import org.lwjgl.input.Keyboard;
 
 import com.shiny.joypadmod.devices.DefaultAxisMappings;
 import com.shiny.joypadmod.devices.DefaultButtonMappings;
@@ -113,8 +113,8 @@ public class ControllerSettings
 			// try XInput only first
 			try
 			{
-				JoypadModInputLibrary = new XInputLibrary();
-				JoypadModInputLibrary.create();
+				//JoypadModInputLibrary = new XInputLibrary();
+				//JoypadModInputLibrary.create();
 				LogHelper.Info("Using XInput library for Joypad Mod controls");
 			}
 			catch (UnsatisfiedLinkError e)
@@ -239,20 +239,22 @@ public class ControllerSettings
 				new ControllerBinding("joy.nextItem", "Next item", new ButtonInputEvent(joyIndex, bMap.RB(), 1),
 						new int[] { -201 }, 0,
 						EnumSet.of(BindingOptions.GAME_BINDING, BindingOptions.CATEGORY_GAMEPLAY)));
+		//TODO sprint binding
+//		joyBindingsMap.put("joy.sprint",
+//				new ControllerBinding("joy.sprint", "Sprint", new ButtonInputEvent(joyIndex, bMap.RS(), 1),
+//						new int[] { Keyboard.KEY_LCONTROL }, 0, EnumSet.of(BindingOptions.GAME_BINDING,
+//						BindingOptions.REPEAT_IF_HELD, BindingOptions.CATEGORY_GAMEPLAY)));
 
-		joyBindingsMap.put("joy.sprint",
-				new ControllerBinding("joy.sprint", "Sprint", new ButtonInputEvent(joyIndex, bMap.RS(), 1),
-						new int[] { Keyboard.KEY_LCONTROL }, 0, EnumSet.of(BindingOptions.GAME_BINDING,
-						BindingOptions.REPEAT_IF_HELD, BindingOptions.CATEGORY_GAMEPLAY)));
+		// TODO Escape /menu binding
+//		joyBindingsMap.put("joy.menu", new ControllerBinding("joy.menu", "Open menu",
+//				new ButtonInputEvent(joyIndex, bMap.Start(), 1), new int[] { Keyboard.KEY_ESCAPE }, 0,
+//				EnumSet.of(BindingOptions.GAME_BINDING, BindingOptions.MENU_BINDING, BindingOptions.CATEGORY_MISC)));
 
-		joyBindingsMap.put("joy.menu", new ControllerBinding("joy.menu", "Open menu",
-				new ButtonInputEvent(joyIndex, bMap.Start(), 1), new int[] { Keyboard.KEY_ESCAPE }, 0,
-				EnumSet.of(BindingOptions.GAME_BINDING, BindingOptions.MENU_BINDING, BindingOptions.CATEGORY_MISC)));
-
-		joyBindingsMap.put("joy.shiftClick",
-				new ControllerBinding("joy.shiftClick", "Shift-click", new ButtonInputEvent(joyIndex, bMap.B(), 1),
-						new int[] { Keyboard.KEY_LSHIFT, -100 }, 0, EnumSet.of(BindingOptions.MENU_BINDING,
-						BindingOptions.REPEAT_IF_HELD, BindingOptions.CATEGORY_INVENTORY)));
+		//TODO shift click binding
+//		joyBindingsMap.put("joy.shiftClick",
+//				new ControllerBinding("joy.shiftClick", "Shift-click", new ButtonInputEvent(joyIndex, bMap.B(), 1),
+//						new int[] { Keyboard.KEY_LSHIFT, -100 }, 0, EnumSet.of(BindingOptions.MENU_BINDING,
+//						BindingOptions.REPEAT_IF_HELD, BindingOptions.CATEGORY_INVENTORY)));
 
 		joyBindingsMap.put("joy.cameraX+",
 				new ControllerBinding("joy.cameraX+", "Look right",

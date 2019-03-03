@@ -4,7 +4,8 @@ import java.util.EnumSet;
 import java.util.Locale;
 
 import net.minecraft.util.Util;
-import org.lwjgl.input.Keyboard;
+import org.lwjgl.glfw.GLFW;
+//import org.lwjgl.input.Keyboard;
 
 import com.shiny.joypadmod.ControllerSettings;
 import com.shiny.joypadmod.helpers.LogHelper;
@@ -253,7 +254,7 @@ public class ControllerBinding
 					}
 
 					// ignore escape key bindings from calibration menu
-					if (i == Keyboard.KEY_ESCAPE && Minecraft.getInstance().currentScreen != null
+					if (i == GLFW.GLFW_KEY_ESCAPE && Minecraft.getInstance().currentScreen != null
 							&& Minecraft.getInstance().currentScreen instanceof JoypadCalibrationMenu)
 						continue;
 					if (sendPressKey)
@@ -371,7 +372,8 @@ public class ControllerBinding
 					}
 					catch (NumberFormatException nfe)
 					{
-						keyCodes[j] = Keyboard.getKeyIndex(keyCodesS[j]);
+						// TODO not sure what this mapping should be
+						//keyCodes[j] = Keyboard.getKeyIndex(keyCodesS[j]);
 					}
 				}
 				i++;

@@ -4,7 +4,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import net.minecraft.util.Util;
-import org.lwjgl.input.Keyboard;
+//import org.lwjgl.input.Keyboard;
 
 import com.shiny.joypadmod.ControllerSettings;
 import com.shiny.joypadmod.GameRenderHandler;
@@ -351,13 +351,19 @@ public class JoypadConfigMenu extends GuiScreen
 			changeButtonText(customBindingKeyIndex, sGet("controlMenu.pressKey"));
 			if (this.lastKeyCode != -1)
 			{
-				String key = Keyboard.getKeyName(this.lastKeyCode);
+				// TODO don't know how to get key name
+//				String key = Keyboard.getKeyName(this.lastKeyCode);
+				String key = "DUMMY_KEY";
 				this.lastKeyCode = -1;
 				LogHelper.Info("Received " + key);
 				customBindingTickStart = 0;
 				ControllerBinding binding;
+//				binding = new ControllerBinding("user." + key, key, new ButtonInputEvent(
+//						this.getCurrentControllerId(), -1, 1), new int[] { Keyboard.getKeyIndex(key) }, 0,
+//						EnumSet.of(BindingOptions.GAME_BINDING, BindingOptions.REPEAT_IF_HELD,
+//								BindingOptions.RENDER_TICK, BindingOptions.CATEGORY_MISC));
 				binding = new ControllerBinding("user." + key, key, new ButtonInputEvent(
-						this.getCurrentControllerId(), -1, 1), new int[] { Keyboard.getKeyIndex(key) }, 0,
+						this.getCurrentControllerId(), -1, 1), new int[] { 0 }, 0,
 						EnumSet.of(BindingOptions.GAME_BINDING, BindingOptions.REPEAT_IF_HELD,
 								BindingOptions.RENDER_TICK, BindingOptions.CATEGORY_MISC));
 				if (this.optionList != null && !this.optionList.joyBindKeys.contains(binding.inputString))

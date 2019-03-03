@@ -6,12 +6,14 @@ import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 
+import com.shiny.joypadmod.MouseWrapper;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.gui.GuiListExtended;
 import net.minecraft.util.Util;
 import org.apache.commons.lang3.ArrayUtils;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
+import org.lwjgl.glfw.GLFW;
+//import org.lwjgl.input.Keyboard;
+//import org.lwjgl.input.Mouse;
 
 import com.shiny.joypadmod.ControllerSettings;
 import com.shiny.joypadmod.helpers.LogHelper;
@@ -278,8 +280,9 @@ public class JoypadControlList extends GuiListExtended//GuiScrollingList
 		Minecraft mc = Minecraft.getInstance();
 		final MainWindow scaledResolution = mc.mainWindow;
 
-		final int k = Mouse.getX() * scaledResolution.getScaledWidth() / mc.mainWindow.getWidth();
-		final int i1 = scaledResolution.getScaledHeight() - Mouse.getY() * scaledResolution.getScaledHeight()
+		// TODO should be Mouse X and Y not DX and DY
+		final int k = (int)(MouseWrapper.getDX() * scaledResolution.getScaledWidth() / mc.mainWindow.getWidth());
+		final int i1 = (int)(scaledResolution.getScaledHeight() - MouseWrapper.getDY() * scaledResolution.getScaledHeight())
 				/ mc.mainWindow.getHeight() - 1;
 
 		// check if any buttons need updating
@@ -327,7 +330,7 @@ public class JoypadControlList extends GuiListExtended//GuiScrollingList
 		if (inputIndexToUpdate == id)
 		{
 			int key = parent.lastKeyCode;
-			if (key == Keyboard.KEY_ESCAPE || key == 28)
+			if (key == GLFW.GLFW_KEY_ESCAPE || key == 28)
 			{
 				if (key == 28)
 				{
@@ -412,10 +415,13 @@ public class JoypadControlList extends GuiListExtended//GuiScrollingList
 		if (kb != null)
 		{
 			int keyCode = McObfuscationHelper.keyCode(kb);
-			if (keyCode != Keyboard.KEY_NONE)
-			{
-				return ControllerSettings.checkKeyCodeBound(this.parent.getCurrentControllerId(), keyCode, defaultStr);
-			}
+			// TODO Need to handle none
+			return ControllerSettings.checkKeyCodeBound(this.parent.getCurrentControllerId(), keyCode, defaultStr);
+
+//			if (keyCode != Keyboard.KEY_NONE)
+//			{
+//				return ControllerSettings.checkKeyCodeBound(this.parent.getCurrentControllerId(), keyCode, defaultStr);
+//			}
 		}
 		return defaultStr;
 	}
