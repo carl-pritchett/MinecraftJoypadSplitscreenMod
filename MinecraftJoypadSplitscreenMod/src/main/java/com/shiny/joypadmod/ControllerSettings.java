@@ -113,8 +113,8 @@ public class ControllerSettings
 			// try XInput only first
 			try
 			{
-				//JoypadModInputLibrary = new XInputLibrary();
-				//JoypadModInputLibrary.create();
+				JoypadModInputLibrary = new XInputLibrary();
+				JoypadModInputLibrary.create();
 				LogHelper.Info("Using XInput library for Joypad Mod controls");
 			}
 			catch (UnsatisfiedLinkError e)
